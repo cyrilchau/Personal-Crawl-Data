@@ -6,7 +6,8 @@
 # See: https://docs.scrapy.org/en/latest/topics/item-pipeline.html
 
 from sqlalchemy.orm import sessionmaker
-from .model import FoodyItems, db_connect, create_foody_table
+from .model import tbFoodyItems,tbItemImage, tbItemComments, db_connect, create_foody_table
+from .items import FoodyItem, ItemImage, ItemComments
 from scrapy.exceptions import DropItem
 
 
@@ -23,15 +24,40 @@ class FoodyPipeline(object):
 
         """
         session = self.Session()
-        fditem = FoodyItems(**item)
-        if session.query(FoodyItems).filter_by(url=item['url'], avgscore=item['avgscore']).first() == None:
+        if isinstance(item, FoodyItem):
+            fditem = tbFoodyItems(**item)
+            if session.query(tbFoodyItems).filter_by(url=item['url'], avgscore=item['avgscore']).first() == None:
+                try:
+                    session.add(fditem)
+                    session.commit()
+                except:
+                    session.rollback()
+                    raise
+                finally:
+                    session.close()
+        if isinstance(item, ItemImage):
+            fkid = session.query(tbFoodyItems.id).filter_by(url=item['url'])
+            imgitem = tbItemImage(**item,item_id=fkid)
             try:
-                session.add(fditem)
+                session.add(imgitem)
                 session.commit()
             except:
                 session.rollback()
                 raise
             finally:
-                session.close()
+                session.close
+
+        if isinstance(item, ItemComments):
+            fkid = session.query(tbFoodyItems.id).filter_by(url=item['url'])
+            cmtitem = tbItemComments(**item,item_id=fkid)
+            try:
+                session.add(cmtitem)
+                session.commit()
+            except:
+                session.rollback()
+                raise
+            finally:
+                session.close
+
 
         return item

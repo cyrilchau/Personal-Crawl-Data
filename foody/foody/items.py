@@ -9,10 +9,9 @@ import scrapy
 
 
 class FoodyItem(scrapy.Item):
-    # define the fields for your item here like:
-    # name = scrapy.Field()
     url = scrapy.Field()
     title = scrapy.Field()
+    coverurl = scrapy.Field()
     category = scrapy.Field()
     avgscore = scrapy.Field()
     address = scrapy.Field()
@@ -22,3 +21,16 @@ class FoodyItem(scrapy.Item):
     longitude = scrapy.Field()
     timeopen = scrapy.Field()
     pricerange = scrapy.Field()
+
+
+class ItemImage(scrapy.Item):
+    url = scrapy.Field()
+    imgurl = scrapy.Field()
+
+
+class ItemComments(scrapy.Item):
+    url = scrapy.Field()
+    user = scrapy.Field()
+    date = scrapy.Field()
+    content = scrapy.Field()
+
